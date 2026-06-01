@@ -626,7 +626,7 @@
           <div class="fam-name">Ankita Shrivastava</div>
           <div class="fam-of">beloved daughter of</div>
           <div class="fam-parents">Mr. Madan Mannu &amp; Mrs. Namita Shrivastava</div>
-          <div class="fam-kin">Sister to Aastha Shrivastava<br>Granddaughter of Late Shri Mohan Shrivastava</div>
+          <div class="fam-kin">Sister to Anshul Shrivastava<br>Granddaughter of P.P Sinha and Late Vidya Sinha</div>
           <div class="fam-root">
             <svg class="root-emblem" viewBox="0 0 120 110"><use href="#mithilaPeacock"/></svg>
             <span class="root-label">Jharkhand</span>
@@ -646,7 +646,7 @@
           <div class="fam-name">Tanmay Ghosh</div>
           <div class="fam-of">beloved son of</div>
           <div class="fam-parents">Mr. Biplab &amp; Mrs. Shipra Ghosh</div>
-          <div class="fam-kin">Brother to Rohini Ghosh<br>Grandson of Smt. Aruna Ghosh</div>
+          <div class="fam-kin">Brother to Shubham Ghosh<br>Grandson of Late Brojendra Nath Ghosh & Binapani Ghosh</div>
           <div class="fam-root">
             <svg class="root-emblem" viewBox="0 0 110 110"><use href="#alponaLotus"/></svg>
             <span class="root-label">Bengal</span>
@@ -1247,66 +1247,16 @@
 })();
 
 /* ============ BACKGROUND MUSIC (Web Audio — generated, copyright-safe) ============ */
-const Music=(function(){
-  let ctx,master,playing=false,loopId=null,droneNodes=[];
-  /* a gentle Raag Yaman-flavoured scale (relative semitones), pleasant + Indian-leaning */
-  const base=261.63; // C4
-  const scale=[0,2,4,6,7,9,11,12,14,16]; // lydian-ish
-  function freq(step){return base*Math.pow(2,scale[step%scale.length]/12)*(step>=scale.length?2:1);}
-  function pluck(f,t,dur,vol){
-    const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-    o.type='triangle';o2.type='sine';
-    o.frequency.value=f;o2.frequency.value=f*2.005;
-    g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(vol,t+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    o.connect(g);o2.connect(g);g.connect(master);
-    o.start(t);o2.start(t);o.stop(t+dur);o2.stop(t+dur);
+const bgMusic = new Audio("Raanjhan x Kudmayi x Madhanya _ The Bride Mashup _ Rahill Mehta.mp3");
+bgMusic.loop = true;
+bgMusic.addEventListener("loadedmetadata", ()=>{ try{ bgMusic.currentTime = 32; }catch(e){} }, {once:true});
+const Music = {
+  get playing(){ return !bgMusic.paused; },
+  toggle(){
+    if(bgMusic.paused){ if(bgMusic.currentTime < 32){ bgMusic.currentTime = 32; } bgMusic.play().catch(()=>{}); return true; }
+    bgMusic.pause(); return false;
   }
-  function drone(){
-    [base/2, base/2*1.5].forEach(f=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='sine';o.frequency.value=f;
-      g.gain.value=0.018;
-      o.connect(g);g.connect(master);o.start();
-      droneNodes.push(o);
-    });
-  }
-  const melody=[0,2,4,3,2,4,6,4,3,2,0,2,4,7,6,4,3,2];
-  function schedule(){
-    const now=ctx.currentTime;
-    let t=now+0.1;
-    melody.forEach((n,i)=>{
-      const dur=(i%4===3)?1.1:0.62;
-      pluck(freq(n),t,dur+0.4,0.10);
-      if(i%2===0) pluck(freq(n)/2,t,1.4,0.04); // soft lower echo
-      t+=dur;
-    });
-    const total=(t-now)*1000;
-    loopId=setTimeout(schedule, total-200);
-  }
-  return {
-    toggle(){
-      if(!ctx){
-        ctx=new (window.AudioContext||window.webkitAudioContext)();
-        master=ctx.createGain();master.gain.value=0.0;
-        master.connect(ctx.destination);
-      }
-      if(playing){
-        master.gain.setTargetAtTime(0,ctx.currentTime,0.4);
-        clearTimeout(loopId);loopId=null;
-        droneNodes.forEach(o=>{try{o.stop()}catch(e){}});droneNodes=[];
-        playing=false;
-      }else{
-        ctx.resume();
-        master.gain.setTargetAtTime(0.5,ctx.currentTime,0.6);
-        drone();schedule();playing=true;
-      }
-      return playing;
-    },
-    get playing(){return playing;}
-  };
-})();
+};
 
 /* music button */
 const musicBtn=document.getElementById('music');
